@@ -28,7 +28,10 @@ public class Main {
         int[][] intArr4 = new int[size][size];
         for(int i = 0; i < size; i++) {
             for(int j = 0; j < size; j++) {
-                intArr4[i][j] = (i == j) ? 1 : 0;
+                if((i == j) || (i + j) == (size - 1))
+                    intArr4[i][j] = 1;
+                else
+                    intArr4[i][j] = 0;
             }
         }
 
