@@ -5,8 +5,7 @@ import java.util.Scanner;
 
 public class TicTacToe {
 
-    static final int SIZE = 5;
-
+    static final int SIZE = 3;
 
     static final char DOT_EMPTY = '•';
     static final char DOT_HUMAN = 'X';
@@ -20,18 +19,21 @@ public class TicTacToe {
     static Scanner scanner = new Scanner(System.in);
     static Random random = new Random();
 
-    static int lastMoveRow, lastMoveCol;
-    static int numbSymbolVictory;
+    /* ++++++++++++++++++++++++++++++++++++++++++++++ */
+    /**/    static int lastMoveRow, lastMoveCol;    // последний ход
+    /**/    static int numbSymbolVictory;           // кол-ство фишек для победы
+    /* ++++++++++++++++++++++++++++++++++++++++++++++ */
 
     public static void main(String[] args) {
         turnGame();
-
     }
 
     private static void turnGame() {
         initMap();
         printMap();
-        calcNumbSymbolVictory();
+        /* ++++++++++++++++++++++++++++++++++++++++++++++ */
+        /**/    calcNumbSymbolVictory();    // вычисляет кол-стов фишек для победы
+        /* ++++++++++++++++++++++++++++++++++++++++++++++ */
         playGame();
     }
 
@@ -70,19 +72,21 @@ public class TicTacToe {
         }
     }
 
-    private static void calcNumbSymbolVictory() {
-        switch(SIZE) {
-            case 3:
-            case 4:
-            case 5:
-            case 6: { numbSymbolVictory = 3; break; }
-            case 7:
-            case 8:
-            case 9:
-            case 10: { numbSymbolVictory = 4; break; }
-            default: { numbSymbolVictory = 5; }
-        }
-    }
+    /* ++++++++++++++++++++++++++++++++++++++++++++++ */
+    /**/    private static void calcNumbSymbolVictory() {
+    /**/        switch(SIZE) {
+    /**/            case 3:
+    /**/            case 4:
+    /**/            case 5:
+    /**/            case 6: { numbSymbolVictory = 3; break; }
+    /**/            case 7:
+    /**/            case 8:
+    /**/            case 9:
+    /**/            case 10: { numbSymbolVictory = 4; break; }
+    /**/            default: { numbSymbolVictory = 5; }
+    /**/        }
+    /**/    }
+    /* ++++++++++++++++++++++++++++++++++++++++++++++ */
 
     private static void playGame() {
 
@@ -112,7 +116,9 @@ public class TicTacToe {
 
         map[rowNumber - 1][colNumber - 1] = DOT_HUMAN;
 
-        saveLastMove(rowNumber - 1, colNumber - 1);
+        /* ++++++++++++++++++++++++++++++++++++++++++++++ */
+        /**/    saveLastMove(rowNumber - 1, colNumber - 1);
+        /* ++++++++++++++++++++++++++++++++++++++++++++++ */
     }
 
     private static boolean isCellValid(int rowNumber, int colNumber, boolean isAI) {
@@ -132,10 +138,12 @@ public class TicTacToe {
         return true;
     }
 
-    private static void saveLastMove(int row, int col) {
-        lastMoveRow = row;
-        lastMoveCol = col;
-    }
+    /* ++++++++++++++++++++++++++++++++++++++++++++++ */
+    /**/    private static void saveLastMove(int row, int col) {
+    /**/        lastMoveRow = row;
+    /**/        lastMoveCol = col;
+    /**/    }
+    /* ++++++++++++++++++++++++++++++++++++++++++++++ */
 
     private static boolean isCellValid(int rowNumber, int colNumber) {
         return isCellValid(rowNumber, colNumber, false);
@@ -149,7 +157,7 @@ public class TicTacToe {
             String winMessage;
 
             if(symbol == DOT_HUMAN) {
-                winMessage = "УРА! Вы победили!";
+                winMessage = "I`ll be back!";
             }
             else {
                 winMessage = "Восстание близко! AI победил";
@@ -171,94 +179,113 @@ public class TicTacToe {
 
     private static boolean checkWin(char symbol) {
 
-        if(checkWinHorizontal(symbol))
-            return true;
-
-        if(checkWinVertical(symbol))
-            return true;
-
-        if(checkWinLeftToRightDown(symbol))
-            return true;
-
-        if(checkWinLeftToRightUp(symbol))
-            return true;
-
+        /* ++++++++++++++++++++++++++++++++++++++++++++++ */
+        /**/    if(checkWinHorizontal(symbol))
+        /**/        return true;
+        /**/
+        /**/    if(checkWinVertical(symbol))
+        /**/        return true;
+        /**/
+        /**/    if(checkWinLeftToRightDown(symbol))
+        /**/        return true;
+        /**/
+        /**/    if(checkWinLeftToRightUp(symbol))
+        /**/        return true;
+        /* ++++++++++++++++++++++++++++++++++++++++++++++ */
         return false;
     }
 
-    static private boolean checkWinHorizontal(char symbol) {
-        int numbSymbol = 0;
-        for(int col = 0; col < SIZE; col++) {
-            if(map[lastMoveRow][col] == symbol) {
-                numbSymbol++;
-            }
-            if(map[lastMoveRow][col] != symbol) {
-                if(numbSymbol >= numbSymbolVictory)
-                    return true;
-                numbSymbol = 0;
-            }
-        }
-        return (numbSymbol >= numbSymbolVictory) ? true : false;
-    }
+    /* ++++++++++++++++++++++++++++++++++++++++++++++ */
+    /**/    static private boolean checkWinHorizontal(char symbol) {
+    /**/        int numbSymbol = 0;
+    /**/        for(int col = 0; col < SIZE; col++) {
+    /**/            if(map[lastMoveRow][col] == symbol) {
+    /**/                numbSymbol++;
+    /**/            }
+    /**/            if(map[lastMoveRow][col] != symbol) {
+    /**/                if(numbSymbol >= numbSymbolVictory)
+    /**/                    return true;
+    /**/                numbSymbol = 0;
+    /**/            }
+    /**/        }
+    /**/        return numbSymbol >= numbSymbolVictory;
+    /**/    }
+    /* ++++++++++++++++++++++++++++++++++++++++++++++ */
 
-    static private boolean checkWinVertical(char symbol) {
-        int numbSymbol = 0;
-        for(int row = 0; row < SIZE; row++) {
-            if(map[row][lastMoveCol] == symbol) {
-                numbSymbol++;
-            }
-            if(map[row][lastMoveCol] != symbol) {
-                if(numbSymbol >= numbSymbolVictory)
-                    return true;
-                numbSymbol = 0;
-            }
-        }
-        return (numbSymbol >= numbSymbolVictory) ? true : false;
-    }
+    /* ++++++++++++++++++++++++++++++++++++++++++++++ */
+    /**/    static private boolean checkWinVertical(char symbol) {
+    /**/        int numbSymbol = 0;
+    /**/        for(int row = 0; row < SIZE; row++) {
+    /**/            if(map[row][lastMoveCol] == symbol) {
+    /**/                numbSymbol++;
+    /**/            }
+    /**/            if(map[row][lastMoveCol] != symbol) {
+    /**/                if(numbSymbol >= numbSymbolVictory)
+    /**/                    return true;
+    /**/                numbSymbol = 0;
+    /**/            }
+    /**/        }
+    /**/        return numbSymbol >= numbSymbolVictory;
+    /**/    }
+    /* ++++++++++++++++++++++++++++++++++++++++++++++ */
 
-    static private boolean checkWinLeftToRightDown(char symbol) {
-        int numbSymbol = 0;
-        int rowStart = lastMoveRow - Math.min(lastMoveRow, lastMoveCol);
-        int colStart = lastMoveCol - Math.min(lastMoveRow, lastMoveCol);
-        if((colStart + numbSymbolVictory) > SIZE)
-            return false;
-        if((rowStart + numbSymbolVictory) > SIZE)
-            return false;
-        System.out.println("rowStart = " + rowStart + ", colStart = " + colStart);
-        for(int row = rowStart, col = colStart; row < SIZE || col < SIZE; row++, col++) {
-            System.out.println("row = " + row + ", col = " + col);
-            if(map[row][col] == symbol) {
-                numbSymbol++;
-            }
-            if(map[row][col] != symbol) {
-                if(numbSymbol >= numbSymbolVictory)
-                    return true;
-                numbSymbol = 0;
-            }
-        }
-        return (numbSymbol >= numbSymbolVictory) ? true : false;
-    }
+    /* ++++++++++++++++++++++++++++++++++++++++++++++ */
+    /**/    static private boolean checkWinLeftToRightDown(char symbol) {
+    /**/        int numbSymbol = 0;
+    /**/        int rowStart = lastMoveRow - Math.min(lastMoveRow, lastMoveCol);
+    /**/        int colStart = lastMoveCol - Math.min(lastMoveRow, lastMoveCol);
+    /**/        if((colStart + numbSymbolVictory) > SIZE)
+    /**/            return false;
+    /**/        if((rowStart + numbSymbolVictory) > SIZE)
+    /**/            return false;
+    /**/        int row = rowStart;
+    /**/        int col = colStart;
+    /**/        while (true){
+    /**/            if(map[row][col] == symbol) {
+    /**/                numbSymbol++;
+    /**/            }
+    /**/            if(map[row][col] != symbol) {
+    /**/                if(numbSymbol >= numbSymbolVictory)
+    /**/                    return true;
+    /**/                numbSymbol = 0;
+    /**/            }
+    /**/            row++;
+    /**/            col++;
+    /**/            if((row >= SIZE) || (col >= SIZE))
+    /**/                break;
+    /**/        }
+    /**/        return numbSymbol >= numbSymbolVictory;
+    /**/    }
+    /* ++++++++++++++++++++++++++++++++++++++++++++++ */
 
-    static private boolean checkWinLeftToRightUp(char symbol) {
-        int numbSymbol = 0;
-        int rowStart = lastMoveRow + Math.min(lastMoveCol, (SIZE - 1) - lastMoveRow);
-        int colStart = lastMoveCol - Math.min(lastMoveCol, (SIZE - 1) - lastMoveRow);
-        if((colStart + numbSymbolVictory) > SIZE)
-            return false;
-        if((rowStart - (numbSymbolVictory - 1)) < 0)
-            return false;
-        for(int row = rowStart, col = colStart; row >= 0 || col < SIZE; row--, col++) {
-            if(map[row][col] == symbol) {
-                numbSymbol++;
-            }
-            if(map[row][col] != symbol) {
-                if(numbSymbol >= numbSymbolVictory)
-                    return true;
-                numbSymbol = 0;
-            }
-        }
-        return (numbSymbol >= numbSymbolVictory) ? true : false;
-    }
+    /* ++++++++++++++++++++++++++++++++++++++++++++++ */
+    /**/    static private boolean checkWinLeftToRightUp(char symbol) {
+    /**/        int numbSymbol = 0;
+    /**/        int rowStart = lastMoveRow + Math.min(lastMoveCol, (SIZE - 1) - lastMoveRow);
+    /**/        int colStart = lastMoveCol - Math.min(lastMoveCol, (SIZE - 1) - lastMoveRow);
+    /**/        if((colStart + numbSymbolVictory) > SIZE)
+    /**/            return false;
+    /**/        if((rowStart - (numbSymbolVictory - 1)) < 0)
+    /**/            return false;
+    /**/        int row = rowStart;
+    /**/        int col = colStart;
+    /**/        while (true){
+    /**/            if(map[row][col] == symbol) {
+    /**/                numbSymbol++;
+    /**/            }
+    /**/            if(map[row][col] != symbol) {
+    /**/                if(numbSymbol >= numbSymbolVictory)
+    /**/                    return true;
+    /**/                numbSymbol = 0;
+    /**/            }
+    /**/            row--;
+    /**/            col++;
+    /**/            if((row < 0) || (col >= SIZE))
+    /**/                break;
+    /**/        }
+    /**/        return numbSymbol >= numbSymbolVictory;
+    /**/    }
+    /* ++++++++++++++++++++++++++++++++++++++++++++++ */
 
     private static boolean isMapFull() {
         for (char[] chars : map) {
@@ -277,14 +304,29 @@ public class TicTacToe {
         int colNumber;
         System.out.println("\nХод компьютера!\n");
         do {
-            rowNumber = random.nextInt(SIZE) + 1;
-            colNumber = random.nextInt(SIZE) + 1;
-        } while (!isCellValid(rowNumber, colNumber, true));
+            /* ++++++++++++++++++++++++++++++++++++++++++++++ */
+            /**/    int[] aiTurn = getAiTurn();
+            /**/    rowNumber = aiTurn[0];
+            /**/    colNumber = aiTurn[1];
+            /* ++++++++++++++++++++++++++++++++++++++++++++++ */
+        } while (!isCellValid(rowNumber + 1, colNumber + 1, true));
 
-        map[rowNumber - 1][colNumber - 1] = DOT_AI;
+        map[rowNumber][colNumber] = DOT_AI;
 
-        saveLastMove(rowNumber - 1, colNumber - 1);
+        /* ++++++++++++++++++++++++++++++++++++++++++++++ */
+        /**/    saveLastMove(rowNumber, colNumber);
+        /* ++++++++++++++++++++++++++++++++++++++++++++++ */
     }
 
+    // К сожалению, не получилось реализовать более-менее "умную"
+    // систему ходов для блокировки и победы
+    /* ++++++++++++++++++++++++++++++++++++++++++++++ */
+    /**/    private static int[] getAiTurn() {
+    /**/        int[] aiTurn = new int[2];
+    /**/        aiTurn[0] = random.nextInt(SIZE);
+    /**/        aiTurn[1] = random.nextInt(SIZE);
+    /**/        return aiTurn;
+    /**/    }
+    /* ++++++++++++++++++++++++++++++++++++++++++++++ */
 }
 
