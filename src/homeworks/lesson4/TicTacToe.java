@@ -3,6 +3,10 @@ package homeworks.lesson4;
 import java.util.Random;
 import java.util.Scanner;
 
+/* ++++++++++++++++++++++++++++++++++++++++++++++ */
+/**/    // изменения в коде обрамлены таким образом
+/* ++++++++++++++++++++++++++++++++++++++++++++++ */
+
 public class TicTacToe {
 
     static final int SIZE = 3;
