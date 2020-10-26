@@ -24,8 +24,9 @@ public class TicTacToe {
     static Random random = new Random();
 
     /* ++++++++++++++++++++++++++++++++++++++++++++++ */
-    /**/    static int lastMoveRow, lastMoveCol;    // последний ход
-    /**/    static int numbSymbolVictory;           // кол-ство фишек для победы
+    /**/    static int lastMoveHumanRow, lastMoveHumanCol;      // последний ход человека
+    /**/    static int lastMoveAIRow, lastMoveAICol;            // последний ход компьютера
+    /**/    static int numbSymbolVictory;                       // кол-ство фишек для победы
     /* ++++++++++++++++++++++++++++++++++++++++++++++ */
 
     public static void main(String[] args) {
@@ -99,7 +100,6 @@ public class TicTacToe {
             printMap();
             checkEnd(DOT_HUMAN);
 
-
             aiTurn();
             printMap();
             checkEnd(DOT_AI);
@@ -121,7 +121,7 @@ public class TicTacToe {
         map[rowNumber - 1][colNumber - 1] = DOT_HUMAN;
 
         /* ++++++++++++++++++++++++++++++++++++++++++++++ */
-        /**/    saveLastMove(rowNumber - 1, colNumber - 1);
+        /**/    saveHumanLastMove(rowNumber - 1, colNumber - 1);
         /* ++++++++++++++++++++++++++++++++++++++++++++++ */
     }
 
@@ -143,9 +143,9 @@ public class TicTacToe {
     }
 
     /* ++++++++++++++++++++++++++++++++++++++++++++++ */
-    /**/    private static void saveLastMove(int row, int col) {
-    /**/        lastMoveRow = row;
-    /**/        lastMoveCol = col;
+    /**/    private static void saveHumanLastMove(int row, int col) {
+    /**/        lastMoveHumanRow = row;
+    /**/        lastMoveHumanCol = col;
     /**/    }
     /* ++++++++++++++++++++++++++++++++++++++++++++++ */
 
@@ -201,12 +201,13 @@ public class TicTacToe {
 
     /* ++++++++++++++++++++++++++++++++++++++++++++++ */
     /**/    static private boolean checkWinHorizontal(char symbol) {
+    /**/        int row = symbol == DOT_HUMAN ? lastMoveHumanRow : lastMoveAIRow;
     /**/        int numbSymbol = 0;
     /**/        for(int col = 0; col < SIZE; col++) {
-    /**/            if(map[lastMoveRow][col] == symbol) {
+    /**/            if(map[row][col] == symbol) {
     /**/                numbSymbol++;
     /**/            }
-    /**/            if(map[lastMoveRow][col] != symbol) {
+    /**/            if(map[row][col] != symbol) {
     /**/                if(numbSymbol >= numbSymbolVictory)
     /**/                    return true;
     /**/                numbSymbol = 0;
@@ -218,12 +219,13 @@ public class TicTacToe {
 
     /* ++++++++++++++++++++++++++++++++++++++++++++++ */
     /**/    static private boolean checkWinVertical(char symbol) {
+    /**/        int col = symbol == DOT_HUMAN ? lastMoveHumanCol : lastMoveAICol;
     /**/        int numbSymbol = 0;
     /**/        for(int row = 0; row < SIZE; row++) {
-    /**/            if(map[row][lastMoveCol] == symbol) {
+    /**/            if(map[row][col] == symbol) {
     /**/                numbSymbol++;
     /**/            }
-    /**/            if(map[row][lastMoveCol] != symbol) {
+    /**/            if(map[row][col] != symbol) {
     /**/                if(numbSymbol >= numbSymbolVictory)
     /**/                    return true;
     /**/                numbSymbol = 0;
@@ -236,15 +238,16 @@ public class TicTacToe {
     /* ++++++++++++++++++++++++++++++++++++++++++++++ */
     /**/    static private boolean checkWinLeftToRightDown(char symbol) {
     /**/        int numbSymbol = 0;
-    /**/        int rowStart = lastMoveRow - Math.min(lastMoveRow, lastMoveCol);
-    /**/        int colStart = lastMoveCol - Math.min(lastMoveRow, lastMoveCol);
+    /**/        int rowInit = symbol == DOT_HUMAN ? lastMoveHumanRow : lastMoveAIRow;
+    /**/        int colInit = symbol == DOT_HUMAN ? lastMoveHumanCol : lastMoveAICol;
+    /**/        int rowStart = rowInit - Math.min(rowInit, colInit);
+    /**/        int colStart = colInit - Math.min(rowInit, colInit);
     /**/        if((colStart + numbSymbolVictory) > SIZE)
     /**/            return false;
     /**/        if((rowStart + numbSymbolVictory) > SIZE)
     /**/            return false;
-    /**/        int row = rowStart;
-    /**/        int col = colStart;
-    /**/        while (true){
+    /**/
+    /**/        for(int row = rowStart, col = colStart; row < SIZE && col < SIZE; row++, col++) {
     /**/            if(map[row][col] == symbol) {
     /**/                numbSymbol++;
     /**/            }
@@ -253,10 +256,6 @@ public class TicTacToe {
     /**/                    return true;
     /**/                numbSymbol = 0;
     /**/            }
-    /**/            row++;
-    /**/            col++;
-    /**/            if((row >= SIZE) || (col >= SIZE))
-    /**/                break;
     /**/        }
     /**/        return numbSymbol >= numbSymbolVictory;
     /**/    }
@@ -265,15 +264,15 @@ public class TicTacToe {
     /* ++++++++++++++++++++++++++++++++++++++++++++++ */
     /**/    static private boolean checkWinLeftToRightUp(char symbol) {
     /**/        int numbSymbol = 0;
-    /**/        int rowStart = lastMoveRow + Math.min(lastMoveCol, (SIZE - 1) - lastMoveRow);
-    /**/        int colStart = lastMoveCol - Math.min(lastMoveCol, (SIZE - 1) - lastMoveRow);
+    /**/        int rowInit = (symbol == DOT_HUMAN) ? lastMoveHumanRow : lastMoveAIRow;
+    /**/        int colInit = (symbol == DOT_HUMAN) ? lastMoveHumanCol : lastMoveAICol;
+    /**/        int rowStart = rowInit + Math.min(colInit, (SIZE - 1) - rowInit);
+    /**/        int colStart = colInit - Math.min(colInit, (SIZE - 1) - rowInit);
     /**/        if((colStart + numbSymbolVictory) > SIZE)
     /**/            return false;
     /**/        if((rowStart - (numbSymbolVictory - 1)) < 0)
     /**/            return false;
-    /**/        int row = rowStart;
-    /**/        int col = colStart;
-    /**/        while (true){
+    /**/        for(int row = rowStart, col = colStart; row >= 0 && col < SIZE; row--, col++){
     /**/            if(map[row][col] == symbol) {
     /**/                numbSymbol++;
     /**/            }
@@ -282,10 +281,6 @@ public class TicTacToe {
     /**/                    return true;
     /**/                numbSymbol = 0;
     /**/            }
-    /**/            row--;
-    /**/            col++;
-    /**/            if((row < 0) || (col >= SIZE))
-    /**/                break;
     /**/        }
     /**/        return numbSymbol >= numbSymbolVictory;
     /**/    }
@@ -318,7 +313,7 @@ public class TicTacToe {
         map[rowNumber][colNumber] = DOT_AI;
 
         /* ++++++++++++++++++++++++++++++++++++++++++++++ */
-        /**/    saveLastMove(rowNumber, colNumber);
+        /**/    saveAILastMove(rowNumber, colNumber);
         /* ++++++++++++++++++++++++++++++++++++++++++++++ */
     }
 
@@ -326,22 +321,19 @@ public class TicTacToe {
     /**/    // далее идет код добавленный от меня
     /* ++++++++++++++++++++++++++++++++++++++++++++++ */
 
+    private static void saveAILastMove(int row, int col) {
+        lastMoveAIRow = row;
+        lastMoveAICol = col;
+    }
+
     private static int[] getAiTurn() {
         int[] aiTurn = {-1,-1};
 
-        aiTurn = getAiTurnHorizontal();
+        aiTurn = getAiTurnVictory(DOT_AI, lastMoveAIRow, lastMoveAICol);
         if(aiTurn[0] != -1)
             return aiTurn;
 
-        aiTurn = getAiTurnVertical();
-        if(aiTurn[0] != -1)
-            return aiTurn;
-
-        aiTurn = getAiTurnLeftToRightDown();
-        if(aiTurn[0] != -1)
-            return aiTurn;
-
-        aiTurn = getAiTurnLeftToRightUp();
+        aiTurn = getAiTurnBlock(DOT_HUMAN, lastMoveHumanRow, lastMoveHumanCol);
         if(aiTurn[0] != -1)
             return aiTurn;
 
@@ -353,10 +345,54 @@ public class TicTacToe {
         return aiTurn;
     }
 
+    private static int[] getAiTurnVictory(char dot, int rowInit, int colInit) {
+        int[] aiTurn = {-1,-1};
+
+        aiTurn = getAiTurnHorizontal(dot, rowInit);
+        if(aiTurn[0] != -1)
+            return aiTurn;
+
+        aiTurn = getAiTurnVertical(dot, colInit);
+        if(aiTurn[0] != -1)
+            return aiTurn;
+
+        aiTurn = getAiTurnLeftToRightDown(dot, rowInit, colInit);
+        if(aiTurn[0] != -1)
+            return aiTurn;
+
+        aiTurn = getAiTurnLeftToRightUp(dot, rowInit, colInit);
+        if(aiTurn[0] != -1)
+            return aiTurn;
+
+        return new int[] {-1,-1};
+    }
+
+    private static int[] getAiTurnBlock(char dot, int rowInit, int colInit) {
+        int[] aiTurn = {-1,-1};
+
+        aiTurn = getAiTurnHorizontal(dot, rowInit);
+        if(aiTurn[0] != -1)
+            return aiTurn;
+
+        aiTurn = getAiTurnVertical(dot, colInit);
+        if(aiTurn[0] != -1)
+            return aiTurn;
+
+        aiTurn = getAiTurnLeftToRightDown(dot, rowInit, colInit);
+        if(aiTurn[0] != -1)
+            return aiTurn;
+
+        aiTurn = getAiTurnLeftToRightUp(dot, rowInit, colInit);
+        if(aiTurn[0] != -1)
+            return aiTurn;
+
+        return new int[] {-1,-1};
+    }
+
     private static int[] getAiTurnAroundLastTurn() {
         // Цикл вокруг последнего хода
-        for(int i = lastMoveRow - 1; i <= lastMoveRow + 1; i++) {
-            for(int j = lastMoveCol - 1; j <= lastMoveCol + 1; j++) {
+        for(int i = lastMoveHumanRow - 1; i <= lastMoveHumanRow + 1; i++) {
+            for(int j = lastMoveHumanCol - 1; j <= lastMoveHumanCol + 1; j++) {
                 // пропускаем, если индексы выходят за пределы поля
                 if(i < 0 || i >= SIZE)
                     break;
@@ -376,183 +412,110 @@ public class TicTacToe {
         return new int[] {random.nextInt(SIZE), random.nextInt(SIZE)};
     }
 
-    static private int[] getAiTurnVertical() {
-        int countHumanDot = 0;
-        int[] aiTurn = {-1,-1};
+    static private int[] getAiTurnVertical(char dot, final int colInit) {
+        int countDot = 0;
         for(int row = 0; row < SIZE; row++) {
-            if(map[row][lastMoveCol] == DOT_EMPTY) {
-                if(countHumanDot == numbSymbolVictory - 1) {
-                    if(aiTurn[0] == -1) {
-                        aiTurn[0] = row;
-                        aiTurn[1] = lastMoveCol;
-                    }
-                    return aiTurn;
+            if(map[row][colInit] == dot) {
+                int countDot2 = 0;
+                for (int i = row + 1; i < SIZE; i++) {
+                    if (map[i][colInit] == dot)
+                        countDot2++;
+                    else
+                        break;
                 }
-                if((row - 1) >= 0) {
-                    if(map[row - 1][lastMoveCol] == DOT_HUMAN) {
-                        aiTurn[0] = row;
-                        aiTurn[1] = lastMoveCol;
-                    }
-                    if(map[row - 1][lastMoveCol] == DOT_EMPTY) {
-                        countHumanDot = 0;
-                        aiTurn[0] = -1;
-                        aiTurn[1] = -1;
-                    }
-                }
-                if((row + 1) < SIZE){
-                    if(map[row + 1][lastMoveCol] == DOT_HUMAN) {
-                        aiTurn[0] = row;
-                        aiTurn[1] = lastMoveCol;
-                    }
-                }
+                if ((countDot + countDot2) == numbSymbolVictory - 1)
+                    return new int[]{row, colInit};
+                else
+                    countDot = 0;
             }
-            if(map[row][lastMoveCol] == DOT_HUMAN) {
-                countHumanDot++;
-                if(countHumanDot == numbSymbolVictory - 1) {
-                    if(aiTurn[0] != -1)
-                        return aiTurn;
-                }
+            if(map[row][colInit] == dot) {
+                countDot++;
             }
-            if(map[row][lastMoveCol] == DOT_AI) {
-                countHumanDot = 0;
+            if(map[row][colInit] != dot && map[row][colInit] != DOT_EMPTY) {
+                countDot = 0;
             }
         }
         return new int[]{-1,-1};
     }
 
-    static private int[] getAiTurnHorizontal() {
-        int countHumanDot = 0;
-        int[] aiTurn = {-1, -1};
-
+    static private int[] getAiTurnHorizontal(char dot, final int rowInit) {
+        int countDot = 0;
         for(int col = 0; col < SIZE; col++) {
-            if (map[lastMoveRow][col] == DOT_EMPTY) {
-                if (countHumanDot == numbSymbolVictory - 1) {
-                    if (aiTurn[0] == -1) {
-                        aiTurn[0] = lastMoveRow;
-                        aiTurn[1] = col;
-                    }
-                    return aiTurn;
+            if (map[rowInit][col] == DOT_EMPTY) {
+                int countHumanDot2 = 0;
+                for(int i = col + 1; i < SIZE; i++) {
+                    if(map[rowInit][i] == dot)
+                        countHumanDot2++;
+                    else
+                        break;
                 }
-                if ((col - 1) >= 0) {
-                    if (map[lastMoveRow][col - 1] == DOT_HUMAN) {
-                        aiTurn[0] = lastMoveRow;
-                        aiTurn[1] = col;
-                    }
-                    if (map[lastMoveRow][col - 1] == DOT_EMPTY) {
-                        countHumanDot = 0;
-                        aiTurn[0] = -1;
-                        aiTurn[1] = -1;
-                    }
-                }
-                if ((col + 1) < SIZE) {
-                    if (map[lastMoveRow][col + 1] == DOT_HUMAN) {
-                        aiTurn[0] = lastMoveRow;
-                        aiTurn[1] = col;
-                    }
-                }
+                if((countDot + countHumanDot2) == numbSymbolVictory - 1)
+                    return new int[] {rowInit, col};
+                else
+                    countDot = 0;
             }
-            if (map[lastMoveRow][col] == DOT_HUMAN) {
-                countHumanDot++;
-                if(countHumanDot == numbSymbolVictory - 1) {
-                    if(aiTurn[0] != -1)
-                        return aiTurn;
-                }
+            if (map[rowInit][col] == dot) {
+                countDot++;
             }
-            if (map[lastMoveRow][col] == DOT_AI) {
-                countHumanDot = 0;
+            if (map[rowInit][col] != dot && map[rowInit][col] != DOT_EMPTY) {
+                countDot = 0;
             }
         }
 
         return new int[]{-1,-1};
     }
 
-    static private int[] getAiTurnLeftToRightDown() {
-        int countHumanDot = 0;
-        int[] aiTurn = {-1,-1};
-        int rowStart = lastMoveRow - Math.min(lastMoveRow, lastMoveCol);
-        int colStart = lastMoveCol - Math.min(lastMoveRow, lastMoveCol);
+    static private int[] getAiTurnLeftToRightDown(char dot, int rowInit, int colInit) {
+        int countDot = 0;
+        int rowStart = rowInit - Math.min(rowInit, colInit);
+        int colStart = colInit - Math.min(rowInit, colInit);
         for(int row = rowStart, col = colStart; (row < SIZE) && (col < SIZE); row++, col++) {
             if (map[row][col] == DOT_EMPTY) {
-                if (countHumanDot == numbSymbolVictory - 1) {
-                    if (aiTurn[0] == -1) {
-                        aiTurn[0] = row;
-                        aiTurn[1] = col;
-                    }
-                    return aiTurn;
+                int countDot2 = 0;
+                for(int i = row + 1, j = col + 1; (i < SIZE) && (j < SIZE); i++, j++) {
+                    if(map[i][j] == dot)
+                        countDot2++;
+                    else
+                        break;
                 }
-                if ((row - 1) >= 0 && (col - 1) >= 0) {
-                    if (map[row - 1][col - 1] == DOT_HUMAN) {
-                        aiTurn[0] = row;
-                        aiTurn[1] = col;
-                    }
-                    if (map[row - 1][col - 1] == DOT_EMPTY) {
-                        countHumanDot = 0;
-                        aiTurn[0] = -1;
-                        aiTurn[1] = -1;
-                    }
-                }
-                if ((row + 1) < SIZE && (col + 1) < SIZE) {
-                    if (map[row + 1][col + 1] == DOT_HUMAN) {
-                        aiTurn[0] = row;
-                        aiTurn[1] = col;
-                    }
-                }
+                if((countDot + countDot2) == numbSymbolVictory - 1)
+                    return new int[] {row, col};
+                else
+                    countDot = 0;
             }
-            if (map[row][col] == DOT_HUMAN) {
-                countHumanDot++;
-                if(countHumanDot == numbSymbolVictory - 1) {
-                    if(aiTurn[0] != -1)
-                        return aiTurn;
-                }
+            if (map[row][col] == dot) {
+                countDot++;
             }
-            if (map[row][col] == DOT_AI) {
-                countHumanDot = 0;
+            if (map[row][col] != dot && map[row][col] != DOT_EMPTY) {
+                countDot = 0;
             }
         }
         return new int[]{-1,-1};
     }
 
-    static private int[] getAiTurnLeftToRightUp() {
-        int countHumanDot = 0;
-        int[] aiTurn = {-1,-1};
-        int rowStart = lastMoveRow + Math.min(lastMoveCol, (SIZE - 1) - lastMoveRow);
-        int colStart = lastMoveCol - Math.min(lastMoveCol, (SIZE - 1) - lastMoveRow);
+    static private int[] getAiTurnLeftToRightUp(char dot, int rowInit, int colInit) {
+        int countDot = 0;
+        int rowStart = rowInit + Math.min(colInit, (SIZE - 1) - rowInit);
+        int colStart = colInit - Math.min(colInit, (SIZE - 1) - rowInit);
         for(int row = rowStart, col = colStart; (row >= 0) && (col < SIZE); row--, col++) {
             if (map[row][col] == DOT_EMPTY) {
-                if (countHumanDot == numbSymbolVictory - 1) {
-                    if (aiTurn[0] == -1) {
-                        aiTurn[0] = row;
-                        aiTurn[1] = col;
-                    }
-                    return aiTurn;
+                int countDot2 = 0;
+                for(int i = row - 1, j = col + 1; (i >= 0) && (j < SIZE); i--, j++) {
+                    if(map[i][j] == dot)
+                        countDot2++;
+                    else
+                        break;
                 }
-                if ((row + 1) < SIZE && (col - 1) >= 0) {
-                    if (map[row + 1][col - 1] == DOT_HUMAN) {
-                        aiTurn[0] = row;
-                        aiTurn[1] = col;
-                    }
-                    if (map[row + 1][col - 1] == DOT_EMPTY) {
-                        countHumanDot = 0;
-                        aiTurn[0] = -1;
-                        aiTurn[1] = -1;
-                    }
-                }
-                if ((row - 1) >= 0 && (col + 1) < SIZE) {
-                    if (map[row - 1][col + 1] == DOT_HUMAN) {
-                        aiTurn[0] = row;
-                        aiTurn[1] = col;
-                    }
-                }
+                if((countDot + countDot2) == numbSymbolVictory - 1)
+                    return new int[] { row, col};
+                else
+                    countDot = 0;
             }
-            if (map[row][col] == DOT_HUMAN) {
-                countHumanDot++;
-                if(countHumanDot == numbSymbolVictory - 1) {
-                    if(aiTurn[0] != -1)
-                        return aiTurn;
-                }
+            if (map[row][col] == dot) {
+                countDot++;
             }
-            if (map[row][col] == DOT_AI) {
-                countHumanDot = 0;
+            if (map[row][col] != dot && map[row][col] != DOT_EMPTY) {
+                countDot = 0;
             }
         }
         return new int[]{-1,-1};
