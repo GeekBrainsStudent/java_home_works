@@ -414,45 +414,80 @@ public class TicTacToe {
 
     static private int[] getAiTurnVertical(char dot, final int colInit) {
         int countDot = 0;
-        for(int row = 0; row < SIZE; row++) {
-            if(map[row][colInit] == dot) {
+        for (int row = 0; row < SIZE; row++) {
+            if (map[row][colInit] == DOT_EMPTY) { // если встретиться пустая ячейка
                 int countDot2 = 0;
-                for (int i = row + 1; i < SIZE; i++) {
-                    if (map[i][colInit] == dot)
+                int pos = 0;
+                for (pos = row + 1; pos < SIZE; pos++) { // идем циклом до встречи с не dot
+                    if (map[pos][colInit] == dot)
                         countDot2++;
                     else
                         break;
                 }
-                if ((countDot + countDot2) == numbSymbolVictory - 1)
+
+                if ((countDot + countDot2) == numbSymbolVictory - 1) { // угроза поражения (возможность сделать победный ход)
                     return new int[]{row, colInit};
-                else
+                } else if ((countDot + countDot2) == numbSymbolVictory - 2) { // возможная угроза (либо возможность сделать победный ход)
+                    if (dot == DOT_HUMAN) { // если мы высчитываем блокировочный ход (не победный)
+                        if (pos < SIZE) {
+                            if (map[pos][colInit] == DOT_EMPTY) { // если крайняя ячейка пуста
+                                if ((pos + 1) < SIZE) { // и ячейка по соседству тоже пуста
+                                    if (map[pos + 1][colInit] == DOT_EMPTY)
+                                        return new int[]{row, colInit};
+                                }
+                                if ((row - 1) >= 0) {   // если ячейка из главного цикла также пуста
+                                    if (map[row - 1][colInit] == DOT_EMPTY)
+                                        return new int[]{row, colInit};
+                                }
+                            }
+                        }
+                    }
+                } else {
                     countDot = 0;
+                }
             }
-            if(map[row][colInit] == dot) {
+            if (map[row][colInit] == dot) {
                 countDot++;
             }
-            if(map[row][colInit] != dot && map[row][colInit] != DOT_EMPTY) {
+            if (map[row][colInit] != dot && map[row][colInit] != DOT_EMPTY) {
                 countDot = 0;
             }
         }
-        return new int[]{-1,-1};
+        return new int[]{-1, -1};
     }
 
     static private int[] getAiTurnHorizontal(char dot, final int rowInit) {
         int countDot = 0;
-        for(int col = 0; col < SIZE; col++) {
+        for (int col = 0; col < SIZE; col++) {
             if (map[rowInit][col] == DOT_EMPTY) {
-                int countHumanDot2 = 0;
-                for(int i = col + 1; i < SIZE; i++) {
-                    if(map[rowInit][i] == dot)
-                        countHumanDot2++;
+                int countDot2 = 0;
+                int pos = 0;
+                for (pos = col + 1; pos < SIZE; pos++) {
+                    if (map[rowInit][pos] == dot)
+                        countDot2++;
                     else
                         break;
                 }
-                if((countDot + countHumanDot2) == numbSymbolVictory - 1)
-                    return new int[] {rowInit, col};
-                else
+                if ((countDot + countDot2) == numbSymbolVictory - 1) {
+                    return new int[]{rowInit, col};
+                } else if ((countDot + countDot2) == numbSymbolVictory - 2) {
+                    if (dot == DOT_HUMAN) {
+                        if (pos < SIZE) {
+                            if (map[rowInit][pos] == DOT_EMPTY) {
+                                if ((pos + 1) < SIZE) {
+                                    if (map[rowInit][pos + 1] == DOT_EMPTY)
+                                        return new int[]{rowInit, col};
+                                }
+                                if ((col - 1) >= 0) {
+                                    if (map[rowInit][col - 1] == DOT_EMPTY)
+                                        return new int[]{rowInit, col};
+                                }
+                            }
+                        }
+                    }
+                } else {
                     countDot = 0;
+                }
             }
             if (map[rowInit][col] == dot) {
                 countDot++;
@@ -462,26 +497,43 @@ public class TicTacToe {
             }
         }
 
-        return new int[]{-1,-1};
+        return new int[]{-1, -1};
     }
 
     static private int[] getAiTurnLeftToRightDown(char dot, int rowInit, int colInit) {
         int countDot = 0;
         int rowStart = rowInit - Math.min(rowInit, colInit);
         int colStart = colInit - Math.min(rowInit, colInit);
-        for(int row = rowStart, col = colStart; (row < SIZE) && (col < SIZE); row++, col++) {
+        for (int row = rowStart, col = colStart; (row < SIZE) && (col < SIZE); row++, col++) {
             if (map[row][col] == DOT_EMPTY) {
                 int countDot2 = 0;
-                for(int i = row + 1, j = col + 1; (i < SIZE) && (j < SIZE); i++, j++) {
-                    if(map[i][j] == dot)
+                int i, j;
+                for (i = row + 1, j = col + 1; (i < SIZE) && (j < SIZE); i++, j++) {
+                    if (map[i][j] == dot)
                         countDot2++;
                     else
                         break;
                 }
-                if((countDot + countDot2) == numbSymbolVictory - 1)
-                    return new int[] {row, col};
-                else
+                if ((countDot + countDot2) == numbSymbolVictory - 1) {
+                    return new int[]{row, col};
+                } else if ((countDot + countDot2) == numbSymbolVictory - 2) {
+                    if (dot == DOT_HUMAN) {
+                        if (i < SIZE && j < SIZE) {
+                            if (map[i][j] == DOT_EMPTY) {
+                                if (i + 1 < SIZE && j + 1 < SIZE) {
+                                    if (map[i + 1][j + 1] == DOT_EMPTY)
+                                        return new int[]{row, col};
+                                }
+                                if (row - 1 >= 0 && col - 1 >= 0) {
+                                    if (map[row - 1][col - 1] == DOT_EMPTY)
+                                        return new int[]{row, col};
+                                }
+                            }
+                        }
+                    }
+                } else {
                     countDot = 0;
+                }
             }
             if (map[row][col] == dot) {
                 countDot++;
@@ -490,26 +542,43 @@ public class TicTacToe {
                 countDot = 0;
             }
         }
-        return new int[]{-1,-1};
+        return new int[]{-1, -1};
     }
 
     static private int[] getAiTurnLeftToRightUp(char dot, int rowInit, int colInit) {
         int countDot = 0;
         int rowStart = rowInit + Math.min(colInit, (SIZE - 1) - rowInit);
         int colStart = colInit - Math.min(colInit, (SIZE - 1) - rowInit);
-        for(int row = rowStart, col = colStart; (row >= 0) && (col < SIZE); row--, col++) {
+        for (int row = rowStart, col = colStart; (row >= 0) && (col < SIZE); row--, col++) {
             if (map[row][col] == DOT_EMPTY) {
                 int countDot2 = 0;
-                for(int i = row - 1, j = col + 1; (i >= 0) && (j < SIZE); i--, j++) {
-                    if(map[i][j] == dot)
+                int i, j;
+                for (i = row - 1, j = col + 1; (i >= 0) && (j < SIZE); i--, j++) {
+                    if (map[i][j] == dot)
                         countDot2++;
                     else
                         break;
                 }
-                if((countDot + countDot2) == numbSymbolVictory - 1)
-                    return new int[] { row, col};
-                else
+                if ((countDot + countDot2) == numbSymbolVictory - 1) {
+                    return new int[]{row, col};
+                } else if ((countDot + countDot2) == numbSymbolVictory - 2) {
+                    if (dot == DOT_HUMAN) {
+                        if (i >= 0 && j < SIZE) {
+                            if (map[i][j] == DOT_EMPTY) {
+                                if (i - 1 >= 0 && j + 1 < SIZE) {
+                                    if (map[i - 1][j + 1] == DOT_EMPTY)
+                                        return new int[]{row, col};
+                                }
+                                if (row + 1 < SIZE && col - 1 >= 0) {
+                                    if (map[row + 1][col - 1] == DOT_EMPTY)
+                                        return new int[]{row, col};
+                                }
+                            }
+                        }
+                    }
+                } else {
                     countDot = 0;
+                }
             }
             if (map[row][col] == dot) {
                 countDot++;
@@ -518,6 +587,6 @@ public class TicTacToe {
                 countDot = 0;
             }
         }
-        return new int[]{-1,-1};
+        return new int[]{-1, -1};
     }
 }
