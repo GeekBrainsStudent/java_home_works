@@ -1,27 +1,22 @@
 package homeworks.lesson6;
 
-import java.util.Random;
-
 public class Dog extends Animal {
 
     @Override
     protected double setRunLimit() {
-        Random random = new Random();
         double randomDouble = random.nextDouble();
-        return randomDouble + 400 + (randomDouble * 200);
+        return randomDouble + 400 + (randomDouble * 200); // бежит от 400 до ~580.9 метров
     }
 
     @Override
     protected double setSwimLimit() {
-        Random random = new Random();
         double randomDouble = random.nextDouble();
-        return randomDouble + 8 + (randomDouble * 4);
+        return randomDouble + 8 + (randomDouble * 4);   // плывет от 8 до ~12.5 метров
     }
 
     @Override
     protected double setJumpLimit() {
-        Random random = new Random();
         double randomDouble = random.nextDouble();
-        return randomDouble + 0.3 + (randomDouble * 0.4);
+        return randomDouble + 0.3 + (randomDouble * 0.4); // прыгает от 0.3 до ~1.56 метров
     }
 }

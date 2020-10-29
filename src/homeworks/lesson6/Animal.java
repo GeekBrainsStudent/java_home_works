@@ -1,8 +1,13 @@
 package homeworks.lesson6;
 
+import java.util.Random;
+
 abstract class Animal {
 
+    Random random;
+
     Animal() {
+        random = new Random();
         this.runLimit = -1.0;
         this.swimLimit = -1.0;
         this.jumpLimit = -1.0;
@@ -12,19 +17,19 @@ abstract class Animal {
     protected double swimLimit;
     protected double jumpLimit;
 
-    protected boolean run(double length) {
+    boolean run(double length) {
         if(runLimit < 0)
             System.out.println("Перед использованием объекта, вызовите метод setLimits");
         return runLimit >= length;
     }
 
-    protected boolean swim(double length) {
+    boolean swim(double length) {
         if(runLimit < 0)
             System.out.println("Перед использованием объекта, вызовите метод setLimits");
         return swimLimit >= length;
     }
 
-    protected boolean jump(double height) {
+    boolean jump(double height) {
         if(runLimit < 0)
             System.out.println("Перед использованием объекта, вызовите метод setLimits");
         return jumpLimit >= height;
