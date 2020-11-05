@@ -13,7 +13,7 @@ class Game {
     private int lastMoveRowComp;
     private int lastMoveColComp;
 
-    private int numbCharsToWin;
+    private int numbMarksToWin;
 
     private String message;
 
@@ -60,12 +60,12 @@ class Game {
             case 3:
             case 4:
             case 5:
-            case 6: { numbCharsToWin = 3; break; }
+            case 6: { numbMarksToWin = 3; break; }
             case 7:
             case 8:
             case 9:
-            case 10: { numbCharsToWin = 4; break; }
-            default: { numbCharsToWin = 5; }
+            case 10: { numbMarksToWin = 4; break; }
+            default: { numbMarksToWin = 5; }
         }
     }
 
@@ -78,7 +78,7 @@ class Game {
     }
 
     private boolean isCellValid(int row, int col) {
-        if ((row < 0) || (row > size) || (col < 0) || (col > size) || map[row][col] != Resource.EMPTY_MARK)
+        if ((row < 0) || (row >= size) || (col < 0) || (col >= size) || map[row][col] != Resource.EMPTY_MARK)
             return false;
         return true;
     }
@@ -86,10 +86,6 @@ class Game {
     private void saveLastMoveUser(int row, int col) {
         lastMoveRowUser = row;
         lastMoveColUser = col;
-    }
-
-    public String getMessage() {
-        return message;
     }
 
     public int getSize() {
@@ -118,86 +114,88 @@ class Game {
     }
 
     private boolean checkWinHorizontal(char mark) {
-        int row = mark == Resource.USER_MARK ? lastMoveRowUser : lastMoveRowComp;
-        int numbSymbol = 0;
+        int row = (mark == Resource.USER_MARK) ? lastMoveRowUser : lastMoveRowComp;
+        int countMark = 0;
         for(int col = 0; col < size; col++) {
             if(map[row][col] == mark) {
-                numbSymbol++;
+                countMark++;
             }
             if(map[row][col] != mark) {
-                if(numbSymbol >= numbCharsToWin)
+                if(countMark >= numbMarksToWin)
                     return true;
-                numbSymbol = 0;
+                countMark = 0;
             }
         }
-        return numbSymbol >= numbCharsToWin;
+        return countMark >= numbMarksToWin;
     }
 
     private boolean checkWinVertical(char mark) {
-        int col = mark == Resource.USER_MARK ? lastMoveColUser : lastMoveColComp;
-        int numbSymbol = 0;
+        int col = (mark == Resource.USER_MARK) ? lastMoveColUser : lastMoveColComp;
+        int countMarks = 0;
         for(int row = 0; row < size; row++) {
             if(map[row][col] == mark) {
-                numbSymbol++;
+                countMarks++;
             }
             if(map[row][col] != mark) {
-                if(numbSymbol >= numbCharsToWin)
+                if(countMarks >= numbMarksToWin)
                     return true;
-                numbSymbol = 0;
+                countMarks = 0;
             }
         }
-        return numbSymbol >= numbCharsToWin;
+        return countMarks >= numbMarksToWin;
     }
 
     private boolean checkWinLeftToRightDown(char mark) {
-        int numbSymbol = 0;
+        int countMarks = 0;
         int rowInit = (mark == Resource.USER_MARK) ? lastMoveRowUser : lastMoveRowComp;
         int colInit = (mark == Resource.USER_MARK) ? lastMoveColUser : lastMoveColComp;
         int rowStart = rowInit - Math.min(rowInit, colInit);
         int colStart = colInit - Math.min(rowInit, colInit);
-        if((colStart + numbCharsToWin) > size)
+        if((colStart + numbMarksToWin) > size)
             return false;
-        if((rowStart + numbCharsToWin) > size)
+        if((rowStart + numbMarksToWin) > size)
             return false;
         for(int row = rowStart, col = colStart; row < size && col < size; row++, col++) {
             if(map[row][col] == mark) {
-                numbSymbol++;
+                countMarks++;
             }
             if(map[row][col] != mark) {
-                if(numbSymbol >= numbCharsToWin)
+                if(countMarks >= numbMarksToWin)
                     return true;
-                numbSymbol = 0;
+                countMarks = 0;
             }
         }
-        return numbSymbol >= numbCharsToWin;
+        return countMarks >= numbMarksToWin;
     }
 
     private boolean checkWinLeftToRightUp(char mark) {
-        int numbSymbol = 0;
+        int countMarks = 0;
         int rowInit = (mark == Resource.USER_MARK) ? lastMoveRowUser : lastMoveRowComp;
         int colInit = (mark == Resource.USER_MARK) ? lastMoveColUser : lastMoveColComp;
         int rowStart = rowInit + Math.min(colInit, (size - 1) - rowInit);
         int colStart = colInit - Math.min(colInit, (size - 1) - rowInit);
-        if((colStart + numbCharsToWin) > size)
+        if((colStart + numbMarksToWin) > size)
             return false;
-        if((rowStart - (numbCharsToWin - 1)) < 0)
+        if((rowStart - (numbMarksToWin - 1)) < 0)
             return false;
         for(int row = rowStart, col = colStart; row >= 0 && col < size; row--, col++){
             if(map[row][col] == mark) {
-                numbSymbol++;
+                countMarks++;
             }
             if(map[row][col] != mark) {
-                if(numbSymbol >= numbCharsToWin)
+                if(countMarks >= numbMarksToWin)
                     return true;
-                numbSymbol = 0;
+                countMarks = 0;
             }
         }
-        return numbSymbol >= numbCharsToWin;
+        return countMarks >= numbMarksToWin;
     }
 
-
     public int[] compMove() {
-        int[] move = getCompMove();
+        int[] move;
+        do {
+            move = getCompMove();
+        }
         while (!isCellValid(move[0], move[1]));
         map[move[0]][move[1]] = Resource.COMP_MARK;
         saveLastMoveComp(move[0], move[1]);
@@ -212,15 +210,18 @@ class Game {
     private int[] getCompMove() {
         int[] move = null;
 
+        if(lastMoveRowComp == -1)
+            return getCompMoveRand();
+
         move = getCompMoveToWin(Resource.COMP_MARK, lastMoveRowComp, lastMoveColComp);
         if(move != null)
             return move;
 
-        move = getAiTurnBlock(Resource.COMP_MARK, lastMoveRowUser, lastMoveColUser);
+        move = getCompMoveBlock(Resource.COMP_MARK, lastMoveRowUser, lastMoveColUser);
         if(move != null)
             return move;
 
-        move = getAiTurnAroundLastTurn();
+        move = getCompMoveAroundLastTurn();
         if(move != null)
             return move;
 
@@ -229,29 +230,29 @@ class Game {
     }
 
     private int[] getCompMoveToWin(char mark, int rowInit, int colInit) {
-        int[] aiTurn = null;
+        int[] move = null;
 
-        aiTurn = getCompMoveHor(mark, rowInit);
-        if(aiTurn != null)
-            return aiTurn;
+        move = getCompMoveHor(mark, rowInit);
+        if(move != null)
+            return move;
 
-        aiTurn = getCompMoveVer(mark, colInit);
-        if(aiTurn != null)
-            return aiTurn;
+        move = getCompMoveVer(mark, colInit);
+        if(move != null)
+            return move;
 
-        aiTurn = getCompMoveDiagDw(mark, rowInit, colInit);
-        if(aiTurn != null)
-            return aiTurn;
+        move = getCompMoveDiagDw(mark, rowInit, colInit);
+        if(move != null)
+            return move;
 
-        aiTurn = getCompMoveDiagUp(mark, rowInit, colInit);
-        if(aiTurn != null)
-            return aiTurn;
+        move = getCompMoveDiagUp(mark, rowInit, colInit);
+        if(move != null)
+            return move;
 
         return null;
     }
 
-    private int[] getAiTurnBlock(char dot, int rowInit, int colInit) {
-        int[] aiTurn = {-1,-1};
+    private int[] getCompMoveBlock(char dot, int rowInit, int colInit) {
+        int[] aiTurn = null;
 
         aiTurn = getCompMoveHor(dot, rowInit);
         if(aiTurn != null)
@@ -272,7 +273,7 @@ class Game {
         return null;
     }
 
-    private int[] getAiTurnAroundLastTurn() {
+    private int[] getCompMoveAroundLastTurn() {
         // Цикл вокруг последнего хода
         for(int i = lastMoveRowUser - 1; i <= lastMoveRowUser + 1; i++) {
             for(int j = lastMoveColUser - 1; j <= lastMoveColUser + 1; j++) {
@@ -308,9 +309,9 @@ class Game {
                         break;
                 }
 
-                if ((countDot + countDot2) == numbCharsToWin - 1) { // угроза поражения (возможность сделать победный ход)
+                if ((countDot + countDot2) == numbMarksToWin - 1) { // угроза поражения (возможность сделать победный ход)
                     return new int[]{row, colInit};
-                } else if ((countDot + countDot2) == numbCharsToWin - 2) { // возможная угроза (либо возможность сделать победный ход)
+                } else if ((countDot + countDot2) == numbMarksToWin - 2) { // возможная угроза (либо возможность сделать победный ход)
                     if (mark == Resource.USER_MARK) { // если мы высчитываем блокировочный ход (не победный)
                         if (pos < size) {
                             if (map[pos][colInit] == Resource.EMPTY_MARK) { // если крайняя ячейка пуста
@@ -340,20 +341,20 @@ class Game {
     }
 
     private int[] getCompMoveHor(char mark, final int rowInit) {
-        int countDot = 0;
+        int countMark = 0;
         for (int col = 0; col < size; col++) {
             if (map[rowInit][col] == Resource.EMPTY_MARK) {
-                int countDot2 = 0;
+                int countMark2 = 0;
                 int pos = 0;
                 for (pos = col + 1; pos < size; pos++) {
                     if (map[rowInit][pos] == mark)
-                        countDot2++;
+                        countMark2++;
                     else
                         break;
                 }
-                if ((countDot + countDot2) == numbCharsToWin - 1) {
+                if ((countMark + countMark2) == numbMarksToWin - 1) {
                     return new int[]{rowInit, col};
-                } else if ((countDot + countDot2) == numbCharsToWin - 2) {
+                } else if ((countMark + countMark2) == numbMarksToWin - 2) {
                     if (mark == Resource.USER_MARK) {
                         if (pos < size) {
                             if (map[rowInit][pos] == Resource.EMPTY_MARK) {
@@ -369,14 +370,14 @@ class Game {
                         }
                     }
                 } else {
-                    countDot = 0;
+                    countMark = 0;
                 }
             }
             if (map[rowInit][col] == mark) {
-                countDot++;
+                countMark++;
             }
             if (map[rowInit][col] != mark && map[rowInit][col] != Resource.EMPTY_MARK) {
-                countDot = 0;
+                countMark = 0;
             }
         }
 
@@ -397,9 +398,9 @@ class Game {
                     else
                         break;
                 }
-                if ((countDot + countDot2) == numbCharsToWin - 1) {
+                if ((countDot + countDot2) == numbMarksToWin - 1) {
                     return new int[]{row, col};
-                } else if ((countDot + countDot2) == numbCharsToWin - 2) {
+                } else if ((countDot + countDot2) == numbMarksToWin - 2) {
                     if (mark == Resource.USER_MARK) {
                         if (i < size && j < size) {
                             if (map[i][j] == Resource.EMPTY_MARK) {
@@ -442,9 +443,9 @@ class Game {
                     else
                         break;
                 }
-                if ((countDot + countDot2) == numbCharsToWin - 1) {
+                if ((countDot + countDot2) == numbMarksToWin - 1) {
                     return new int[]{row, col};
-                } else if ((countDot + countDot2) == numbCharsToWin - 2) {
+                } else if ((countDot + countDot2) == numbMarksToWin - 2) {
                     if (mark == Resource.USER_MARK) {
                         if (i >= 0 && j < size) {
                             if (map[i][j] == Resource.EMPTY_MARK) {
