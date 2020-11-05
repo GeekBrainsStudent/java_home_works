@@ -1,10 +1,11 @@
-package homeworks.lesson8.model;
+package homeworks.lesson8;
 
 import java.util.Random;
 
-public class Game {
+class Game {
 
     final private int size;
+
     private char[][] map;
 
     private int lastMoveRowUser;
@@ -12,18 +13,13 @@ public class Game {
     private int lastMoveRowComp;
     private int lastMoveColComp;
 
-    private final char userMark = 'X';
-    private final char compMark = 'O';
-    private final char emptyMark = '*';
-
-
     private int numbCharsToWin;
 
     private String message;
 
     private Random random = new Random();
 
-    public Game(int size) {
+    Game(int size) {
         this.size = size;
         map = new char[this.size][this.size];
         initMap();
@@ -36,10 +32,14 @@ public class Game {
         lastMoveColComp = -1;
     }
 
+    public char[][] getMap() {
+        return map;
+    }
+
     private void initMap() {
         for(int i = 0; i < size; i++) {
             for(int j = 0; j < size; j++) {
-                map[i][j] = emptyMark;
+                map[i][j] = Resource.EMPTY_MARK;
             }
         }
     }
@@ -47,7 +47,7 @@ public class Game {
     private boolean isMapFull() {
         for (char[] chars : map) {
             for (char aChar : chars) {
-                if(aChar == emptyMark) {
+                if(aChar == Resource.EMPTY_MARK) {
                     return false;
                 }
             }
@@ -70,16 +70,15 @@ public class Game {
     }
 
     public boolean userMove(int row, int col) {
-        if(!isCellValid(row, col)) {
+        if(!isCellValid(row, col))
             return false;
-        }
-        map[row][col] = userMark;
+        map[row][col] = Resource.USER_MARK;
         saveLastMoveUser(row, col);
         return true;
     }
 
     private boolean isCellValid(int row, int col) {
-        if ((row < 0) || (row > size) || (col < 0) || (col > size) || map[row][col] != emptyMark)
+        if ((row < 0) || (row > size) || (col < 0) || (col > size) || map[row][col] != Resource.EMPTY_MARK)
             return false;
         return true;
     }
@@ -89,15 +88,15 @@ public class Game {
         lastMoveColUser = col;
     }
 
-    public boolean checkEnd(char mark) {
-        if(checkWin(mark)) {
-            if(mark == userMark)
-                message = "I`ll be back!";
-            else
-                message = "Восстание близко! AI победил";
-            return true;
-        }
+    public String getMessage() {
+        return message;
+    }
 
+    public int getSize() {
+        return size;
+    }
+
+    public boolean checkDraw() {
         if(isMapFull()) {
             message = "Ничья!";
             return true;
@@ -105,7 +104,7 @@ public class Game {
         return false;
     }
 
-    private boolean checkWin(char mark) {
+    public boolean checkWin(char mark) {
 
         if(checkWinHorizontal(mark))
             return true;
@@ -119,7 +118,7 @@ public class Game {
     }
 
     private boolean checkWinHorizontal(char mark) {
-        int row = mark == userMark ? lastMoveRowUser : lastMoveRowComp;
+        int row = mark == Resource.USER_MARK ? lastMoveRowUser : lastMoveRowComp;
         int numbSymbol = 0;
         for(int col = 0; col < size; col++) {
             if(map[row][col] == mark) {
@@ -135,7 +134,7 @@ public class Game {
     }
 
     private boolean checkWinVertical(char mark) {
-        int col = mark == userMark ? lastMoveColUser : lastMoveColComp;
+        int col = mark == Resource.USER_MARK ? lastMoveColUser : lastMoveColComp;
         int numbSymbol = 0;
         for(int row = 0; row < size; row++) {
             if(map[row][col] == mark) {
@@ -152,8 +151,8 @@ public class Game {
 
     private boolean checkWinLeftToRightDown(char mark) {
         int numbSymbol = 0;
-        int rowInit = (mark == userMark) ? lastMoveRowUser : lastMoveRowComp;
-        int colInit = (mark == userMark) ? lastMoveColUser : lastMoveColComp;
+        int rowInit = (mark == Resource.USER_MARK) ? lastMoveRowUser : lastMoveRowComp;
+        int colInit = (mark == Resource.USER_MARK) ? lastMoveColUser : lastMoveColComp;
         int rowStart = rowInit - Math.min(rowInit, colInit);
         int colStart = colInit - Math.min(rowInit, colInit);
         if((colStart + numbCharsToWin) > size)
@@ -175,8 +174,8 @@ public class Game {
 
     private boolean checkWinLeftToRightUp(char mark) {
         int numbSymbol = 0;
-        int rowInit = (mark == userMark) ? lastMoveRowUser : lastMoveRowComp;
-        int colInit = (mark == userMark) ? lastMoveColUser : lastMoveColComp;
+        int rowInit = (mark == Resource.USER_MARK) ? lastMoveRowUser : lastMoveRowComp;
+        int colInit = (mark == Resource.USER_MARK) ? lastMoveColUser : lastMoveColComp;
         int rowStart = rowInit + Math.min(colInit, (size - 1) - rowInit);
         int colStart = colInit - Math.min(colInit, (size - 1) - rowInit);
         if((colStart + numbCharsToWin) > size)
@@ -197,11 +196,12 @@ public class Game {
     }
 
 
-    private void compMove() {
+    public int[] compMove() {
         int[] move = getCompMove();
         while (!isCellValid(move[0], move[1]));
-        map[move[0]][move[1]] = compMark;
+        map[move[0]][move[1]] = Resource.COMP_MARK;
         saveLastMoveComp(move[0], move[1]);
+        return move;
     }
 
     private void saveLastMoveComp(int row, int col) {
@@ -212,11 +212,11 @@ public class Game {
     private int[] getCompMove() {
         int[] move = null;
 
-        move = getCompMoveToWin(compMark, lastMoveRowComp, lastMoveColComp);
+        move = getCompMoveToWin(Resource.COMP_MARK, lastMoveRowComp, lastMoveColComp);
         if(move != null)
             return move;
 
-        move = getAiTurnBlock(userMark, lastMoveRowUser, lastMoveColUser);
+        move = getAiTurnBlock(Resource.COMP_MARK, lastMoveRowUser, lastMoveColUser);
         if(move != null)
             return move;
 
@@ -283,7 +283,7 @@ public class Game {
                     continue;
 
                 // возвращаем индексы первого встреченного "пустого" поля
-                if(map[i][j] == emptyMark) {
+                if(map[i][j] == Resource.EMPTY_MARK) {
                     return new int[] {i,j};
                 }
             }
@@ -298,7 +298,7 @@ public class Game {
     private int[] getCompMoveVer(char mark, final int colInit) {
         int countDot = 0;
         for (int row = 0; row < size; row++) {
-            if (map[row][colInit] == emptyMark) { // если встретиться пустая ячейка
+            if (map[row][colInit] == Resource.EMPTY_MARK) { // если встретиться пустая ячейка
                 int countDot2 = 0;
                 int pos = 0;
                 for (pos = row + 1; pos < size; pos++) { // идем циклом до встречи с не dot
@@ -311,15 +311,15 @@ public class Game {
                 if ((countDot + countDot2) == numbCharsToWin - 1) { // угроза поражения (возможность сделать победный ход)
                     return new int[]{row, colInit};
                 } else if ((countDot + countDot2) == numbCharsToWin - 2) { // возможная угроза (либо возможность сделать победный ход)
-                    if (mark == userMark) { // если мы высчитываем блокировочный ход (не победный)
+                    if (mark == Resource.USER_MARK) { // если мы высчитываем блокировочный ход (не победный)
                         if (pos < size) {
-                            if (map[pos][colInit] == emptyMark) { // если крайняя ячейка пуста
+                            if (map[pos][colInit] == Resource.EMPTY_MARK) { // если крайняя ячейка пуста
                                 if ((pos + 1) < size) { // и ячейка по соседству тоже пуста
-                                    if (map[pos + 1][colInit] == emptyMark)
+                                    if (map[pos + 1][colInit] == Resource.EMPTY_MARK)
                                         return new int[]{row, colInit};
                                 }
                                 if ((row - 1) >= 0) {   // если ячейка из главного цикла также пуста
-                                    if (map[row - 1][colInit] == emptyMark)
+                                    if (map[row - 1][colInit] == Resource.EMPTY_MARK)
                                         return new int[]{row, colInit};
                                 }
                             }
@@ -332,7 +332,7 @@ public class Game {
             if (map[row][colInit] == mark) {
                 countDot++;
             }
-            if (map[row][colInit] != mark && map[row][colInit] != emptyMark) {
+            if (map[row][colInit] != mark && map[row][colInit] != Resource.EMPTY_MARK) {
                 countDot = 0;
             }
         }
@@ -342,7 +342,7 @@ public class Game {
     private int[] getCompMoveHor(char mark, final int rowInit) {
         int countDot = 0;
         for (int col = 0; col < size; col++) {
-            if (map[rowInit][col] == emptyMark) {
+            if (map[rowInit][col] == Resource.EMPTY_MARK) {
                 int countDot2 = 0;
                 int pos = 0;
                 for (pos = col + 1; pos < size; pos++) {
@@ -354,15 +354,15 @@ public class Game {
                 if ((countDot + countDot2) == numbCharsToWin - 1) {
                     return new int[]{rowInit, col};
                 } else if ((countDot + countDot2) == numbCharsToWin - 2) {
-                    if (mark == userMark) {
+                    if (mark == Resource.USER_MARK) {
                         if (pos < size) {
-                            if (map[rowInit][pos] == emptyMark) {
+                            if (map[rowInit][pos] == Resource.EMPTY_MARK) {
                                 if ((pos + 1) < size) {
-                                    if (map[rowInit][pos + 1] == emptyMark)
+                                    if (map[rowInit][pos + 1] == Resource.EMPTY_MARK)
                                         return new int[]{rowInit, col};
                                 }
                                 if ((col - 1) >= 0) {
-                                    if (map[rowInit][col - 1] == emptyMark)
+                                    if (map[rowInit][col - 1] == Resource.EMPTY_MARK)
                                         return new int[]{rowInit, col};
                                 }
                             }
@@ -375,7 +375,7 @@ public class Game {
             if (map[rowInit][col] == mark) {
                 countDot++;
             }
-            if (map[rowInit][col] != mark && map[rowInit][col] != emptyMark) {
+            if (map[rowInit][col] != mark && map[rowInit][col] != Resource.EMPTY_MARK) {
                 countDot = 0;
             }
         }
@@ -388,7 +388,7 @@ public class Game {
         int rowStart = rowInit - Math.min(rowInit, colInit);
         int colStart = colInit - Math.min(rowInit, colInit);
         for (int row = rowStart, col = colStart; (row < size) && (col < size); row++, col++) {
-            if (map[row][col] == emptyMark) {
+            if (map[row][col] == Resource.EMPTY_MARK) {
                 int countDot2 = 0;
                 int i, j;
                 for (i = row + 1, j = col + 1; (i < size) && (j < size); i++, j++) {
@@ -400,15 +400,15 @@ public class Game {
                 if ((countDot + countDot2) == numbCharsToWin - 1) {
                     return new int[]{row, col};
                 } else if ((countDot + countDot2) == numbCharsToWin - 2) {
-                    if (mark == userMark) {
+                    if (mark == Resource.USER_MARK) {
                         if (i < size && j < size) {
-                            if (map[i][j] == emptyMark) {
+                            if (map[i][j] == Resource.EMPTY_MARK) {
                                 if (i + 1 < size && j + 1 < size) {
-                                    if (map[i + 1][j + 1] == emptyMark)
+                                    if (map[i + 1][j + 1] == Resource.EMPTY_MARK)
                                         return new int[]{row, col};
                                 }
                                 if (row - 1 >= 0 && col - 1 >= 0) {
-                                    if (map[row - 1][col - 1] == emptyMark)
+                                    if (map[row - 1][col - 1] == Resource.EMPTY_MARK)
                                         return new int[]{row, col};
                                 }
                             }
@@ -421,7 +421,7 @@ public class Game {
             if (map[row][col] == mark) {
                 countDot++;
             }
-            if (map[row][col] != mark && map[row][col] != emptyMark) {
+            if (map[row][col] != mark && map[row][col] != Resource.EMPTY_MARK) {
                 countDot = 0;
             }
         }
@@ -433,7 +433,7 @@ public class Game {
         int rowStart = rowInit + Math.min(colInit, (size - 1) - rowInit);
         int colStart = colInit - Math.min(colInit, (size - 1) - rowInit);
         for (int row = rowStart, col = colStart; (row >= 0) && (col < size); row--, col++) {
-            if (map[row][col] == emptyMark) {
+            if (map[row][col] == Resource.EMPTY_MARK) {
                 int countDot2 = 0;
                 int i, j;
                 for (i = row - 1, j = col + 1; (i >= 0) && (j < size); i--, j++) {
@@ -445,15 +445,15 @@ public class Game {
                 if ((countDot + countDot2) == numbCharsToWin - 1) {
                     return new int[]{row, col};
                 } else if ((countDot + countDot2) == numbCharsToWin - 2) {
-                    if (mark == userMark) {
+                    if (mark == Resource.USER_MARK) {
                         if (i >= 0 && j < size) {
-                            if (map[i][j] == emptyMark) {
+                            if (map[i][j] == Resource.EMPTY_MARK) {
                                 if (i - 1 >= 0 && j + 1 < size) {
-                                    if (map[i - 1][j + 1] == emptyMark)
+                                    if (map[i - 1][j + 1] == Resource.EMPTY_MARK)
                                         return new int[]{row, col};
                                 }
                                 if (row + 1 < size && col - 1 >= 0) {
-                                    if (map[row + 1][col - 1] == emptyMark)
+                                    if (map[row + 1][col - 1] == Resource.EMPTY_MARK)
                                         return new int[]{row, col};
                                 }
                             }
@@ -466,7 +466,7 @@ public class Game {
             if (map[row][col] == mark) {
                 countDot++;
             }
-            if (map[row][col] != mark && map[row][col] != emptyMark) {
+            if (map[row][col] != mark && map[row][col] != Resource.EMPTY_MARK) {
                 countDot = 0;
             }
         }
