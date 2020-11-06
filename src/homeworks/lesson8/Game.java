@@ -4,7 +4,7 @@ import java.util.Random;
 
 class Game {
 
-    final private int size;
+    private int size;
 
     private char[][] map;
 
@@ -14,10 +14,7 @@ class Game {
     private int lastMoveColComp;
 
     private int numbMarksToWin;
-
-    private String message;
-
-    private Random random = new Random();
+    private final Random random = new Random();
 
     Game(int size) {
         this.size = size;
@@ -30,10 +27,6 @@ class Game {
 
         lastMoveRowComp = -1;
         lastMoveColComp = -1;
-    }
-
-    public char[][] getMap() {
-        return map;
     }
 
     private void initMap() {
@@ -92,11 +85,13 @@ class Game {
         return size;
     }
 
+    public void setSize(int size) {
+        this.size = size;
+    }
+
     public boolean checkDraw() {
-        if(isMapFull()) {
-            message = "Ничья!";
+        if(isMapFull())
             return true;
-        }
         return false;
     }
 
