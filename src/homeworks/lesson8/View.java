@@ -9,6 +9,7 @@ class View extends JFrame{
     private int size;
     private JButton[][] buttons;
     private final JPanel container = new JPanel();
+    private GridLayout layout;
 
     View(Game game) {
         this.game = game;
@@ -29,7 +30,8 @@ class View extends JFrame{
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         container.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
-        container.setLayout(new GridLayout(size,size));
+        layout = new GridLayout(size,size);
+        container.setLayout(layout);
 
 
         JMenuBar menuBar = new JMenuBar();
@@ -58,11 +60,16 @@ class View extends JFrame{
                     null,null,3);
             try{
                 int enter_size = Integer.parseInt(res);
+                if(enter_size < 3)
+                    enter_size = 3;
                 setNewGame(new Game(enter_size));
                 removeAllButtons();
+                layout.setRows(size);
+                layout.setColumns(size);
                 createButtons();
                 container.revalidate();
                 container.repaint();
+                View.this.pack();
             } catch( NumberFormatException ex) {
                 System.out.println(ex.getMessage());
             }

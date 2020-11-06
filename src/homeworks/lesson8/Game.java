@@ -2,11 +2,14 @@ package homeworks.lesson8;
 
 import java.util.Random;
 
+// имеются некоторые недочеты в рассчете хода компьютером
+// то есть компьютер не всегда ходит единственно верным образом
+
 class Game {
 
-    private int size;
+    private final int size;
 
-    private char[][] map;
+    private final char[][] map;
 
     private int lastMoveRowUser;
     private int lastMoveColUser;
@@ -63,7 +66,7 @@ class Game {
     }
 
     public boolean userMove(int row, int col) {
-        if(!isCellValid(row, col))
+        if(isCellValid(row, col))
             return false;
         map[row][col] = Resource.USER_MARK;
         saveLastMoveUser(row, col);
@@ -71,9 +74,7 @@ class Game {
     }
 
     private boolean isCellValid(int row, int col) {
-        if ((row < 0) || (row >= size) || (col < 0) || (col >= size) || map[row][col] != Resource.EMPTY_MARK)
-            return false;
-        return true;
+        return (row < 0) || (row >= size) || (col < 0) || (col >= size) || map[row][col] != Resource.EMPTY_MARK;
     }
 
     private void saveLastMoveUser(int row, int col) {
@@ -85,14 +86,9 @@ class Game {
         return size;
     }
 
-    public void setSize(int size) {
-        this.size = size;
-    }
 
     public boolean checkDraw() {
-        if(isMapFull())
-            return true;
-        return false;
+        return isMapFull();
     }
 
     public boolean checkWin(char mark) {
@@ -103,9 +99,7 @@ class Game {
             return true;
         if(checkWinLeftToRightDown(mark))
             return true;
-        if(checkWinLeftToRightUp(mark))
-            return true;
-        return false;
+        return checkWinLeftToRightUp(mark);
     }
 
     private boolean checkWinHorizontal(char mark) {
@@ -167,8 +161,9 @@ class Game {
         int countMarks = 0;
         int rowInit = (mark == Resource.USER_MARK) ? lastMoveRowUser : lastMoveRowComp;
         int colInit = (mark == Resource.USER_MARK) ? lastMoveColUser : lastMoveColComp;
-        int rowStart = rowInit + Math.min(colInit, (size - 1) - rowInit);
-        int colStart = colInit - Math.min(colInit, (size - 1) - rowInit);
+        final int min = Math.min(colInit, (size - 1) - rowInit);
+        int rowStart = rowInit + min;
+        int colStart = colInit - min;
         if((colStart + numbMarksToWin) > size)
             return false;
         if((rowStart - (numbMarksToWin - 1)) < 0)
@@ -191,7 +186,7 @@ class Game {
         do {
             move = getCompMove();
         }
-        while (!isCellValid(move[0], move[1]));
+        while (isCellValid(move[0], move[1]));
         map[move[0]][move[1]] = Resource.COMP_MARK;
         saveLastMoveComp(move[0], move[1]);
         return move;
@@ -203,16 +198,16 @@ class Game {
     }
 
     private int[] getCompMove() {
-        int[] move = null;
+        int[] move;
 
         if(lastMoveRowComp == -1)
             return getCompMoveRand();
 
-        move = getCompMoveToWin(Resource.COMP_MARK, lastMoveRowComp, lastMoveColComp);
+        move = getCompMoveToWin(lastMoveRowComp, lastMoveColComp);
         if(move != null)
             return move;
 
-        move = getCompMoveBlock(Resource.COMP_MARK, lastMoveRowUser, lastMoveColUser);
+        move = getCompMoveBlock(lastMoveRowUser, lastMoveColUser);
         if(move != null)
             return move;
 
@@ -224,48 +219,42 @@ class Game {
         return move;
     }
 
-    private int[] getCompMoveToWin(char mark, int rowInit, int colInit) {
-        int[] move = null;
+    private int[] getCompMoveToWin(int rowInit, int colInit) {
+        int[] move;
 
-        move = getCompMoveHor(mark, rowInit);
+        move = getCompMoveHor(Resource.COMP_MARK, rowInit);
         if(move != null)
             return move;
 
-        move = getCompMoveVer(mark, colInit);
+        move = getCompMoveVer(Resource.COMP_MARK, colInit);
         if(move != null)
             return move;
 
-        move = getCompMoveDiagDw(mark, rowInit, colInit);
+        move = getCompMoveDiagonalDw(Resource.COMP_MARK, rowInit, colInit);
         if(move != null)
             return move;
 
-        move = getCompMoveDiagUp(mark, rowInit, colInit);
-        if(move != null)
-            return move;
-
-        return null;
+        move = getCompMoveDiagonalUp(Resource.COMP_MARK, rowInit, colInit);
+        return move;
     }
 
-    private int[] getCompMoveBlock(char dot, int rowInit, int colInit) {
-        int[] aiTurn = null;
+    private int[] getCompMoveBlock(int rowInit, int colInit) {
+        int[] move;
 
-        aiTurn = getCompMoveHor(dot, rowInit);
-        if(aiTurn != null)
-            return aiTurn;
+        move = getCompMoveHor(Resource.USER_MARK, rowInit);
+        if(move != null)
+            return move;
 
-        aiTurn = getCompMoveVer(dot, colInit);
-        if(aiTurn != null)
-            return aiTurn;
+        move = getCompMoveVer(Resource.USER_MARK, colInit);
+        if(move != null)
+            return move;
 
-        aiTurn = getCompMoveDiagDw(dot, rowInit, colInit);
-        if(aiTurn != null)
-            return aiTurn;
+        move = getCompMoveDiagonalDw(Resource.USER_MARK, rowInit, colInit);
+        if(move != null)
+            return move;
 
-        aiTurn = getCompMoveDiagUp(dot, rowInit, colInit);
-        if(aiTurn != null)
-            return aiTurn;
-
-        return null;
+        move = getCompMoveDiagonalUp(Resource.USER_MARK, rowInit, colInit);
+        return move;
     }
 
     private int[] getCompMoveAroundLastTurn() {
@@ -291,56 +280,12 @@ class Game {
         return new int[] {random.nextInt(size), random.nextInt(size)};
     }
 
-    private int[] getCompMoveVer(char mark, final int colInit) {
-        int countDot = 0;
-        for (int row = 0; row < size; row++) {
-            if (map[row][colInit] == Resource.EMPTY_MARK) { // если встретиться пустая ячейка
-                int countDot2 = 0;
-                int pos = 0;
-                for (pos = row + 1; pos < size; pos++) { // идем циклом до встречи с не dot
-                    if (map[pos][colInit] == mark)
-                        countDot2++;
-                    else
-                        break;
-                }
-
-                if ((countDot + countDot2) == numbMarksToWin - 1) { // угроза поражения (возможность сделать победный ход)
-                    return new int[]{row, colInit};
-                } else if ((countDot + countDot2) == numbMarksToWin - 2) { // возможная угроза (либо возможность сделать победный ход)
-                    if (mark == Resource.USER_MARK) { // если мы высчитываем блокировочный ход (не победный)
-                        if (pos < size) {
-                            if (map[pos][colInit] == Resource.EMPTY_MARK) { // если крайняя ячейка пуста
-                                if ((pos + 1) < size) { // и ячейка по соседству тоже пуста
-                                    if (map[pos + 1][colInit] == Resource.EMPTY_MARK)
-                                        return new int[]{row, colInit};
-                                }
-                                if ((row - 1) >= 0) {   // если ячейка из главного цикла также пуста
-                                    if (map[row - 1][colInit] == Resource.EMPTY_MARK)
-                                        return new int[]{row, colInit};
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    countDot = 0;
-                }
-            }
-            if (map[row][colInit] == mark) {
-                countDot++;
-            }
-            if (map[row][colInit] != mark && map[row][colInit] != Resource.EMPTY_MARK) {
-                countDot = 0;
-            }
-        }
-        return null;
-    }
-
     private int[] getCompMoveHor(char mark, final int rowInit) {
         int countMark = 0;
         for (int col = 0; col < size; col++) {
             if (map[rowInit][col] == Resource.EMPTY_MARK) {
                 int countMark2 = 0;
-                int pos = 0;
+                int pos;
                 for (pos = col + 1; pos < size; pos++) {
                     if (map[rowInit][pos] == mark)
                         countMark2++;
@@ -379,23 +324,67 @@ class Game {
         return null;
     }
 
-    private int[] getCompMoveDiagDw(char mark, int rowInit, int colInit) {
-        int countDot = 0;
+    private int[] getCompMoveVer(char mark, final int colInit) {
+        int countMark = 0;
+        for (int row = 0; row < size; row++) {
+            if (map[row][colInit] == Resource.EMPTY_MARK) { // если встретиться пустая ячейка
+                int countMark2 = 0;
+                int pos;
+                for (pos = row + 1; pos < size; pos++) { // идем циклом до встречи с не mark
+                    if (map[pos][colInit] == mark)
+                        countMark2++;
+                    else
+                        break;
+                }
+
+                if ((countMark + countMark2) == numbMarksToWin - 1) { // угроза поражения (возможность сделать победный ход)
+                    return new int[]{row, colInit};
+                } else if ((countMark + countMark2) == numbMarksToWin - 2) { // возможная угроза (либо возможность сделать победный ход)
+                    if (mark == Resource.USER_MARK) { // если мы высчитываем блокировочный ход (не победный)
+                        if (pos < size) {
+                            if (map[pos][colInit] == Resource.EMPTY_MARK) { // если крайняя ячейка пуста
+                                if ((pos + 1) < size) { // и ячейка по соседству тоже пуста
+                                    if (map[pos + 1][colInit] == Resource.EMPTY_MARK)
+                                        return new int[]{row, colInit};
+                                }
+                                if ((row - 1) >= 0) {   // если ячейка из главного цикла также пуста
+                                    if (map[row - 1][colInit] == Resource.EMPTY_MARK)
+                                        return new int[]{row, colInit};
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    countMark = 0;
+                }
+            }
+            if (map[row][colInit] == mark) {
+                countMark++;
+            }
+            if (map[row][colInit] != mark && map[row][colInit] != Resource.EMPTY_MARK) {
+                countMark = 0;
+            }
+        }
+        return null;
+    }
+
+    private int[] getCompMoveDiagonalDw(char mark, int rowInit, int colInit) {
+        int countMark = 0;
         int rowStart = rowInit - Math.min(rowInit, colInit);
         int colStart = colInit - Math.min(rowInit, colInit);
         for (int row = rowStart, col = colStart; (row < size) && (col < size); row++, col++) {
             if (map[row][col] == Resource.EMPTY_MARK) {
-                int countDot2 = 0;
+                int countMark2 = 0;
                 int i, j;
                 for (i = row + 1, j = col + 1; (i < size) && (j < size); i++, j++) {
                     if (map[i][j] == mark)
-                        countDot2++;
+                        countMark2++;
                     else
                         break;
                 }
-                if ((countDot + countDot2) == numbMarksToWin - 1) {
+                if ((countMark + countMark2) == numbMarksToWin - 1) {
                     return new int[]{row, col};
-                } else if ((countDot + countDot2) == numbMarksToWin - 2) {
+                } else if ((countMark + countMark2) == numbMarksToWin - 2) {
                     if (mark == Resource.USER_MARK) {
                         if (i < size && j < size) {
                             if (map[i][j] == Resource.EMPTY_MARK) {
@@ -411,36 +400,37 @@ class Game {
                         }
                     }
                 } else {
-                    countDot = 0;
+                    countMark = 0;
                 }
             }
             if (map[row][col] == mark) {
-                countDot++;
+                countMark++;
             }
             if (map[row][col] != mark && map[row][col] != Resource.EMPTY_MARK) {
-                countDot = 0;
+                countMark = 0;
             }
         }
         return null;
     }
 
-    private int[] getCompMoveDiagUp(char mark, int rowInit, int colInit) {
-        int countDot = 0;
-        int rowStart = rowInit + Math.min(colInit, (size - 1) - rowInit);
-        int colStart = colInit - Math.min(colInit, (size - 1) - rowInit);
+    private int[] getCompMoveDiagonalUp(char mark, int rowInit, int colInit) {
+        int countMark = 0;
+        final int min = Math.min(colInit, (size - 1) - rowInit);
+        int rowStart = rowInit + min;
+        int colStart = colInit - min;
         for (int row = rowStart, col = colStart; (row >= 0) && (col < size); row--, col++) {
             if (map[row][col] == Resource.EMPTY_MARK) {
-                int countDot2 = 0;
+                int countMark2 = 0;
                 int i, j;
                 for (i = row - 1, j = col + 1; (i >= 0) && (j < size); i--, j++) {
                     if (map[i][j] == mark)
-                        countDot2++;
+                        countMark2++;
                     else
                         break;
                 }
-                if ((countDot + countDot2) == numbMarksToWin - 1) {
+                if ((countMark + countMark2) == numbMarksToWin - 1) {
                     return new int[]{row, col};
-                } else if ((countDot + countDot2) == numbMarksToWin - 2) {
+                } else if ((countMark + countMark2) == numbMarksToWin - 2) {
                     if (mark == Resource.USER_MARK) {
                         if (i >= 0 && j < size) {
                             if (map[i][j] == Resource.EMPTY_MARK) {
@@ -456,14 +446,14 @@ class Game {
                         }
                     }
                 } else {
-                    countDot = 0;
+                    countMark = 0;
                 }
             }
             if (map[row][col] == mark) {
-                countDot++;
+                countMark++;
             }
             if (map[row][col] != mark && map[row][col] != Resource.EMPTY_MARK) {
-                countDot = 0;
+                countMark = 0;
             }
         }
         return null;
