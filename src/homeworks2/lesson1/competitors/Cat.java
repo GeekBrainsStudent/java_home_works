@@ -6,8 +6,8 @@ import java.util.Random;
 
 public class Cat implements Competitor {
     private final String name;          // имя
-    private final double speed;         // скорость в м/с
-    private final double jumpHeight;    // высота прыжка в м
+    private final double speed;         // скорость
+    private final double jumpHeight;    // высота прыжка
     private double time;                // время преодоления трэка
 
     public Cat(String name) {
@@ -18,8 +18,9 @@ public class Cat implements Competitor {
         time = 0.0;
     }
 
-    public String getName() {
-        return name;
+    @Override
+    public void printInfo() {
+        System.out.printf("\nCat: %s, скорость: %.2f м/с, высота прыжка: %.2f метров", name,speed,jumpHeight);
     }
 
     @Override
@@ -39,4 +40,6 @@ public class Cat implements Competitor {
     public double getTime() {
         return time;
     }
+
+    public String getName() { return name; }
 }

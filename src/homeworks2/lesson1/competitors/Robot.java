@@ -6,9 +6,9 @@ import java.util.Random;
 
 public class Robot implements Competitor {
 
-    private final String name;
-    private final double speed;
-    private final double jumpHeight;
+    private final String name;          // имя
+    private final double speed;         // скорость
+    private final double jumpHeight;    // высота прыжка
     private double time;                // время преодоления трэка
 
     public Robot(String name) {
@@ -19,8 +19,9 @@ public class Robot implements Competitor {
         time = 0.0;
     }
 
-    public String getName() {
-        return name;
+    @Override
+    public void printInfo() {
+        System.out.printf("\nRobot: %s, скорость: %.2f м/с, высота прыжка: %.2f метров", name,speed,jumpHeight);
     }
 
     @Override
@@ -39,6 +40,10 @@ public class Robot implements Competitor {
 
     public double getTime() {
         return time;
+    }
+
+    public String getName() {
+        return name;
     }
 }
 

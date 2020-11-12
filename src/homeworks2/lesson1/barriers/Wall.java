@@ -11,4 +11,9 @@ public class Wall extends Barrier{
     public double getBarrier() {
         return barrier;
     }
+
+    @Override
+    public void printInfo() {
+        System.out.printf("\nСтена с высотой: %.2f метров",barrier);
+    }
 }

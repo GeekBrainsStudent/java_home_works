@@ -12,4 +12,8 @@ public class Track extends Barrier {
     public double getBarrier() {
         return barrier;
     }
+    @Override
+    public void printInfo() {
+        System.out.printf("\nТрэк с длиной: %.2f метров",barrier);
+    }
 }
