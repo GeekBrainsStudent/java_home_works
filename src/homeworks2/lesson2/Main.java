@@ -22,7 +22,7 @@ public class Main {
         int sum = 0;
         final int validSize = 4;
 
-        if(arr.length != validSize && arr[0].length != validSize)
+        if(!checkSize(arr, validSize))
             throw new MyArraySizeException();
 
         for(int i = 0; i < arr.length; i++) {
@@ -36,5 +36,17 @@ public class Main {
         }
 
         return sum;
+    }
+
+    private static boolean checkSize(String[][] arr, int validSize) {
+
+        if(arr.length != validSize)
+            return false;
+
+        for(int i = 0; i < arr.length; i++)
+            if(arr[i].length != validSize)
+                return false;
+
+        return true;
     }
 }
