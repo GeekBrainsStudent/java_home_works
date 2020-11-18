@@ -9,7 +9,7 @@ public class Main {
         System.out.println("---- Task1 ----");
         String[] words = {"String", "Java", "Interface",
             "String", "Python", "C#", "Java", "String",
-            "String", "Interface", "C#", "Interface"};
+            "String", "Interface", "C#", "Interface", "C#"};
 
         printWords(words);
 
