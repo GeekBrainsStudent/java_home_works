@@ -15,7 +15,6 @@ public class Main {
         System.out.println("1 поток: " + (System.currentTimeMillis() - startTime));
 
 
-
         init();
 
         startTime = System.currentTimeMillis();
@@ -34,7 +33,7 @@ public class Main {
 
         Thread t2 = new Thread(() -> {
             for(int i = 0; i < half; i++)
-                arr2[i] = setNewVal(arr2[i], i);
+                arr2[i] = setNewVal(arr2[i], i + half);
         });
         t2.start();
 
