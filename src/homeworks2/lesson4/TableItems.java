@@ -3,35 +3,42 @@ package homeworks2.lesson4;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
 public class TableItems {
-    public String getWord() {
-        return word.get();
+
+    public SimpleStringProperty message;
+    public SimpleStringProperty date;
+
+    public String getMessage() {
+        return message.get();
     }
 
-    public SimpleStringProperty wordProperty() {
-        return word;
+    public SimpleStringProperty messageProperty() {
+        return message;
     }
 
-    public int getCount() {
-        return count.get();
+    public String getDate() {
+        return date.get();
     }
 
-    public SimpleIntegerProperty countProperty() {
-        return count;
+    public SimpleStringProperty dateProperty() {
+        return date;
     }
 
-    public SimpleStringProperty word;
 
-    public void setCount(int count) {
-        this.count.set(count);
+
+    public void setDate(String date) {
+        this.date.set(date);
     }
 
-    public SimpleIntegerProperty count;
 
 
-    public TableItems(String word, int count) {
-        this.word = new SimpleStringProperty(word);
-        this.count = new SimpleIntegerProperty(count);
+
+    public TableItems(String word, String date) {
+        this.message = new SimpleStringProperty(word);
+        this.date = new SimpleStringProperty(date);
     }
 
 

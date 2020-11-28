@@ -5,48 +5,67 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.text.Text;
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 public class Controller {
 
-    @FXML
-    TextField textField;
-    @FXML
-    Button button;
-    @FXML
-    ListView<String> listView;
-    @FXML
-    TableView<TableItems> tableView;
-    @FXML
-    TableColumn<TableItems, String> wordCol;
-    @FXML
-    TableColumn<TableItems, Integer> countCol;
+    @FXML private ListView<String> users_list;
+    @FXML private TableView<TableItems> messages_table;
+    @FXML private TableColumn<TableItems, String> mess_col;
+    @FXML private TableColumn<TableItems, String> date_col;
+    @FXML private TextField type_message;
+    @FXML private Button send_message;
 
-    private final ObservableList<String> listItems = FXCollections.observableArrayList();;
-    private final ObservableList<TableItems> tableItems = FXCollections.observableArrayList();
+    private final ObservableList<String> users = FXCollections.observableArrayList();;
+    private final ObservableList<TableItems> messages = FXCollections.observableArrayList();
+
 
     @FXML
     public void initialize() {
-        wordCol.setText("Words");
-        wordCol.setCellValueFactory(new PropertyValueFactory<>("word"));
 
-        countCol.setText("Count");
-        countCol.setCellValueFactory(new PropertyValueFactory<>("count"));
+        mess_col.setText("Сообщения");
+        mess_col.setCellValueFactory(cell -> cell.getValue().messageProperty());
+        mess_col.setCellFactory(param -> {
+            TableCell<TableItems, String> cell = new TableCell<>();
+            Text text = new Text();
+            cell.setGraphic(text);
+            cell.setPrefHeight(Control.USE_COMPUTED_SIZE);
+            text.textProperty().bind(cell.itemProperty());
+            text.wrappingWidthProperty().bind(mess_col.widthProperty());
+            return cell;
+        });
 
-        listView.setItems(listItems);
-        tableView.setItems(tableItems);
 
-        addWordsToList("Java");
-        addWordsToTable("Java");
-        addWordsToList("C#");
-        addWordsToTable("C#");
+        date_col.setText("Время");
+        date_col.setCellValueFactory(cell -> cell.getValue().dateProperty());
+
+        messages.add(new TableItems("Меркель:\nМне приснилось, что меня назначили президентом Земли!",
+                "23:35:02"));
+        messages.add(new TableItems("Трамп:\nА мне приснилось, что меня назначили президентом Вселенной!",
+                "23:35:05"));
+        messages.add(new TableItems("Путин:\nА мне приснилось, что я никого не утвердил.",
+                "23:35:08"));
+
+        messages_table.setItems(messages);
+
+        users.addAll("Путин", "Меркель", "Трамп");
+        users_list.setItems(users);
     }
 
     @FXML
-    public void addWord() {
-        String word = getWord();
-        if(checkWord(word)) {
-            addWordsToTable(word);
-            addWordsToList(word);
+    public void send_mess() {
+        String mess = type_message.getText();
+        if(!mess.isBlank()) {
+            GregorianCalendar calendar = new GregorianCalendar();
+            int hour = calendar.get(Calendar.HOUR);
+            int minute = calendar.get(Calendar.MINUTE);
+            int seconds = calendar.get(Calendar.SECOND);
+            String date  = hour + ":" + minute + ":" + seconds;
+            type_message.clear();
+            messages.add(new TableItems(mess, date));
         }
     }
 
@@ -61,34 +80,5 @@ public class Controller {
         alert.setHeaderText("Java2");
         alert.setContentText("lesson #4");
         alert.showAndWait();
-    }
-
-    private String getWord() {
-        return textField.getText();
-    }
-
-    private boolean checkWord(String word) {
-        if(word.isEmpty()) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Нельзя передавать пустые строки.", ButtonType.OK);
-            alert.setHeaderText("Ошибка ввода.");
-            alert.showAndWait();
-            return false;
-        }
-        return true;
-    }
-
-    private void addWordsToList(String word) {
-        listItems.add(word);
-        textField.clear();
-    }
-
-    private void addWordsToTable(String word) {
-        for(TableItems item : tableItems) {
-            if(item.getWord().equals(word)) {
-                item.setCount(item.getCount() + 1);
-                return;
-            }
-        }
-        tableItems.add(new TableItems(word,1));
     }
 }
