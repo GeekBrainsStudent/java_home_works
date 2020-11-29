@@ -1,0 +1,87 @@
+#root {
+    -fx-background-color: #708090;
+    -fx-padding: 5;
+}
+
+.menu-bar{
+    -fx-pref-width: 600;
+    -fx-pref-height: 25;
+}
+
+#users_list {
+    -fx-pref-width: 186;
+    -fx-pref-height: 295;
+}
+
+#messages_table {
+    -fx-pref-width: 400;
+}
+
+.column-header {
+    -fx-pref-height: 0;
+    -fx-max-height: 0;
+    -fx-min-height: 0;
+}
+
+#mess_col {
+    -fx-pref-width: 300;
+}
+
+#date_col {
+    -fx-pref-width: 100;
+    -fx-font-size: 10;
+    -fx-font-style: italic;
+    -fx-alignment: CENTER-RIGHT;
+}
+
+.split-pane {
+
+    -fx-pref-height: 80;
+    -fx-pref-width: 600;
+    -fx-tab-max-width: 500;
+    -fx-tab-min-width: 500;
+
+    -fx-background-color: transparent;
+    -fx-background-size: cover;
+
+}
+
+.split-pane-divider {
+    -fx-background-color: transparent;
+}
+
+.stack-pane {
+    -fx-opacity: 1;
+    -fx-background-color: #708090;
+}
+
+#send_message {
+    -fx-pref-width: 70;
+    -fx-pref-height: 70;
+    -fx-background-radius: 35;
+    -fx-background-color: #FF8C00;
+    -fx-text-alignment: center;
+    -fx-font-size: 14;
+    -fx-font-weight: bold;
+}
+
+#send_message:hover {
+    -fx-background-color: #DC143C;
+    -fx-pref-width: 72;
+    -fx-pref-height: 72;
+    -fx-background-radius: 36;
+}
+
+#send_message:pressed {
+    -fx-pref-width: 68;
+    -fx-pref-height: 68;
+    -fx-background-radius: 34;
+}
+
+#type_message {
+    -fx-opacity: 1;
+    -fx-min-width: 450;
+    -fx-max-width: 450;
+    -fx-pref-width: 450;
+    -fx-pref-height: 40;
+}
